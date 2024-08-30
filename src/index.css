@@ -69,3 +69,10 @@ button:focus-visible {
 .mantine-MultiSelect-dropdown{
   opacity: 95%;
 }
+
+.mantine-Select-wrapper{
+  width: min(320px, 92%);
+  margin-left: auto;
+  margin-right: auto;
+}
+

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import styles from "./App.css";
+import "./App.css";
 import {
     MantineProvider,
     Select,
@@ -13,7 +13,7 @@ import {
     Center,
     Paper,
     SimpleGrid,
-    Dialog
+    Dialog,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
 import Papa from "papaparse";
@@ -25,7 +25,6 @@ import findTravelTimes from "./functions/findTravelTimes";
 
 import MidpointDisplay from "./components/MidpointDisplay";
 import TravelTimesDisplay from "./components/TravelTimesDisplay";
-import { TooltipQuestion } from "./components/TooltipQuestion";
 
 function App() {
     const [times, setTimes] = useState({});
@@ -33,7 +32,7 @@ function App() {
     const [selectedStations, setSelectedStations] = useState([]);
     const [customDestination, setCustomDestination] = useState("");
 
-    const regex_thing = /MRT STATION \([^\)]*\)/g;
+    const regex_thing = /MRT STATION \([^)]*\)/g;
 
     // Read MRT times data from JSON. data[src][target] is the time to travel from src to target.
     useEffect(() => {
@@ -52,11 +51,11 @@ function App() {
         fetch("/mrt.csv")
             .then((response) => response.text())
             .then((responseText) => {
-                const csv = Papa.parse(responseText, { header: false, skipEmptyLines: true});
-                
-                
+                const csv = Papa.parse(responseText, {
+                    header: false,
+                    skipEmptyLines: true,
+                });
                 const newStations = csv["data"].map((e) => {
-                    // Should use .reduce here.
                     const text =
                         e[2].replace(regex_thing, "") + " (" + e[3] + ")"; // Format the label seen in the select.
                     const newStation = {
@@ -109,12 +108,11 @@ function App() {
         const station = stations.find((elem) => elem.value === selectedStation);
         return station.label.replace(regex_thing, "");
     });
-    
+
     //<Flex align="center" justify="center" mt={"100px"} gap={"14%"}>
     return (
         <MantineProvider>
             <Container>
-                <header>{}</header>
                 <Container>
                     <Text size="xl">
                         {"Find the best MRT station to meet."}
@@ -128,7 +126,9 @@ function App() {
                     onChange={setSelectedStations}
                     maxDropdownHeight={200}
                     searchable
-                    comboboxProps={{ transitionProps: { transition: 'pop', duration: 250 } }}
+                    comboboxProps={{
+                        transitionProps: { transition: "pop", duration: 250 },
+                    }}
                     mt={"md"}
                 />
             </Container>
@@ -143,16 +143,15 @@ function App() {
                     <Stack>
                         <MidpointDisplay
                             label={"Best Option"}
-                            tooltipDisplay={"Minimise total travel time"}
+                            tooltipDisplay={"Minimises total travel time."}
                             stationName={midpointName}
                             stationCode={midpointCode}
-
                         />
                         {selectedStations.length > 1 ? (
-                                <TravelTimesDisplay
-                                    stationNames={selectedStationsNames}
-                                    travelTimes={travelTimes}
-                                />
+                            <TravelTimesDisplay
+                                stationNames={selectedStationsNames}
+                                travelTimes={travelTimes}
+                            />
                         ) : null}
                     </Stack>
                 </Paper>
@@ -161,7 +160,9 @@ function App() {
                     <Stack>
                         <MidpointDisplay
                             label={"Fairer Option"}
-                            tooltipDisplay={"Penalises large variance in travel time."}
+                            tooltipDisplay={
+                                "Penalises large variance in travel time."
+                            }
                             stationName={midpointWithVarianceName}
                             stationCode={midpointWithVarianceCode}
                         />
@@ -173,28 +174,32 @@ function App() {
                         ) : null}
                     </Stack>
                 </Paper>
-
-
             </SimpleGrid>
 
             <Paper shadow="xs" radius="md" withBorder p="lg" mt={"xl"}>
                 <Text size="md" fw={500}>
                     {"Custom Destination"}
                 </Text>
-                <Flex justify={"center"}>
-                <Select
-                    placeholder="Select Station"
-                    data={stations.filter(elem => (!(selectedStations.includes(elem.value))))}
-                    disabled={selectedStations.length <= 0}
-                    onChange={setCustomDestination}
-                    maxDropdownHeight={200}
-                    searchable
-                    clearable
-                    comboboxProps={{ transitionProps: { transition: 'pop', duration: 250 } }}
-                    mt={"xs"}
-                />
-
-                </Flex>
+                <Container >
+                    <Select
+                        placeholder="Select Station"
+                        data={stations.filter(
+                            (elem) => !selectedStations.includes(elem.value)
+                        )}
+                        disabled={selectedStations.length <= 0}
+                        onChange={setCustomDestination}
+                        maxDropdownHeight={200}
+                        searchable
+                        clearable
+                        comboboxProps={{
+                            transitionProps: {
+                                transition: "pop",
+                                duration: 250,
+                            },
+                        }}
+                        mt={"xs"}
+                    />
+                </Container>
                 {travelTimesCustom ? (
                     <TravelTimesDisplay
                         stationNames={selectedStationsNames}
@@ -202,7 +207,6 @@ function App() {
                     />
                 ) : null}
             </Paper>
-            
         </MantineProvider>
     );
 }

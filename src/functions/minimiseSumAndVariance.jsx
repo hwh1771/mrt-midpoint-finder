@@ -8,7 +8,7 @@ export default function minimiseSumAndVariance(data, l = 0.005) {
     const mean = sum / data.length;
 
     // Calculate the variance
-    const variance = data.reduce((acc, value) => acc + (value - mean) ** 2, 0) / (data.length - 1);
+    const variance = data.reduce((acc, value) => acc + (value - mean) ** 2, 0);
 
     // Return the objective function value
     return Math.sqrt(sum + l * variance);

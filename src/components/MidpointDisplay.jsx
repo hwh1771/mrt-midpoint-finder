@@ -1,28 +1,32 @@
 import { Stack, Text, Flex } from "@mantine/core";
 import { TooltipQuestion } from "./TooltipQuestion";
+import '../style/MidpointDisplay.css'
+
 
 export default function MidpointDisplay({
     label,
-    tooltipDisplay,
+    tooltipDisplay = null,
     stationName,
     stationCode,
 }) {
     return (
-        <Stack gap={0} mb={"xl"}>
+        <Stack gap={0} mb={"lg"}>
             <Flex justify={"center"} align={"center"} gap={"4px"}>
                 <Text size="md" fw={500}>
                     {label}
                 </Text>
-                <TooltipQuestion label={tooltipDisplay} />
+                {tooltipDisplay ? (
+                    <TooltipQuestion label={tooltipDisplay} />
+                ) : null}
             </Flex>
 
             {stationName ? (
-                <Text size="26px" fw={700} mt={8}>
+                <Text className="station-name" mt={8}>
                     {stationName}
                 </Text>
             ) : null}
 
-            <Text size="20px" fw={700} mt={4}>
+            <Text className="station-code" mt={0}>
                 {"(" + stationCode + ")"}
             </Text>
         </Stack>
