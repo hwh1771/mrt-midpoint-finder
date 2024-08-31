@@ -8,7 +8,6 @@ function toTitleCase(str) {
 }
 
 export default function TravelTimesDisplay({ stationNames, travelTimes }) {
-
     return (
         <Stack>
             {stationNames.map((elem, i) => (

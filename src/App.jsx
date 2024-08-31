@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useContext } from "react";
 import "./App.css";
+
 import {
     MantineProvider,
     Select,
     MultiSelect,
     Text,
     Container,
+    Button,
     Group,
     Flex,
     Stack,
@@ -14,8 +15,11 @@ import {
     Paper,
     SimpleGrid,
     Dialog,
+    useMantineColorScheme,
+    useComputedColorScheme,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
+
 import Papa from "papaparse";
 
 import findMidpoint from "./functions/findMidpoint";
@@ -23,16 +27,21 @@ import minimiseSum from "./functions/minimiseSum";
 import minimiseSumAndVariance from "./functions/minimiseSumAndVariance";
 import findTravelTimes from "./functions/findTravelTimes";
 
-import MidpointDisplay from "./components/MidpointDisplay";
+import MidpointDisplay from "./components/MidpointDisplay/MidpointDisplay";
 import TravelTimesDisplay from "./components/TravelTimesDisplay";
+import { ColorSchemeToggle } from "./components/ColorSchemeToggle";
+import Header from "./components/Header/Header";
 
 function App() {
+    const [colorScheme, setColorScheme] = useState("light");
+    //const { setColorScheme, clearColorScheme } = useMantineColorScheme();
+
     const [times, setTimes] = useState({});
     const [stations, setStations] = useState([]);
     const [selectedStations, setSelectedStations] = useState([]);
     const [customDestination, setCustomDestination] = useState("");
 
-    const regex_thing = /MRT STATION \([^)]*\)/g;
+    const regex_thing = / MRT STATION \([^)]*\)/g;
 
     // Read MRT times data from JSON. data[src][target] is the time to travel from src to target.
     useEffect(() => {
@@ -72,6 +81,7 @@ function App() {
             });
     }, []);
 
+    // Find Midpoint for objective function sum.
     const midpointCode = findMidpoint(times, selectedStations, minimiseSum);
     const midpointStation = stations.find(
         (elem) => elem.value === midpointCode
@@ -84,6 +94,7 @@ function App() {
             ? findTravelTimes(times, selectedStations, midpointCode)
             : [];
 
+    // Find Midpoint for objective function sum + variance.
     const midpointWithVarianceCode = findMidpoint(
         times,
         selectedStations,
@@ -100,6 +111,7 @@ function App() {
             ? findTravelTimes(times, selectedStations, midpointWithVarianceCode)
             : [];
 
+    // Find Travel Times for custom midpoint.
     const travelTimesCustom = customDestination
         ? findTravelTimes(times, selectedStations, customDestination)
         : [];
@@ -109,88 +121,33 @@ function App() {
         return station.label.replace(regex_thing, "");
     });
 
-    //<Flex align="center" justify="center" mt={"100px"} gap={"14%"}>
     return (
-        <MantineProvider>
-            <Container>
-                <Container>
-                    <Text size="xl">
-                        {"Find the best MRT station to meet."}
-                    </Text>
-                </Container>
+        <MantineProvider
+            theme={{ colorScheme: colorScheme }}
+            withCssVariables
+            withGlobalStyles
+        >
+            <Header />
+            <Container class="main-content">
+                <Container px={"xs"}>
+                    <Container mt={"28px"} mb={"34px"}>
+                        <Text size="26px" fw={700}>
+                            {"Find the best MRT station in the middle of everyone."}
+                        </Text>
+                    </Container>
 
-                <MultiSelect
-                    label="Choose starting points"
-                    placeholder="Select Stations"
-                    data={stations}
-                    onChange={setSelectedStations}
-                    maxDropdownHeight={200}
-                    searchable
-                    comboboxProps={{
-                        transitionProps: { transition: "pop", duration: 250 },
-                    }}
-                    mt={"md"}
-                />
-            </Container>
+                    <Container>
+                        <Text size="16px" fw={500}>
+                            {"Choose starting points"}
+                        </Text>
+                    </Container>
 
-            <SimpleGrid
-                cols={2}
-                mt={"40px"}
-                spacing={"5%"}
-                verticalSpacing={"sm"}
-            >
-                <Paper shadow="xs" radius="md" withBorder p="lg">
-                    <Stack>
-                        <MidpointDisplay
-                            label={"Best Option"}
-                            tooltipDisplay={"Minimises total travel time."}
-                            stationName={midpointName}
-                            stationCode={midpointCode}
-                        />
-                        {selectedStations.length > 1 ? (
-                            <TravelTimesDisplay
-                                stationNames={selectedStationsNames}
-                                travelTimes={travelTimes}
-                            />
-                        ) : null}
-                    </Stack>
-                </Paper>
-
-                <Paper shadow="xs" radius="md" withBorder p="lg">
-                    <Stack>
-                        <MidpointDisplay
-                            label={"Fairer Option"}
-                            tooltipDisplay={
-                                "Penalises large variance in travel time."
-                            }
-                            stationName={midpointWithVarianceName}
-                            stationCode={midpointWithVarianceCode}
-                        />
-                        {selectedStations.length > 1 ? (
-                            <TravelTimesDisplay
-                                stationNames={selectedStationsNames}
-                                travelTimes={travelTimesWithVariance}
-                            />
-                        ) : null}
-                    </Stack>
-                </Paper>
-            </SimpleGrid>
-
-            <Paper shadow="xs" radius="md" withBorder p="lg" mt={"xl"}>
-                <Text size="md" fw={500}>
-                    {"Custom Destination"}
-                </Text>
-                <Container >
-                    <Select
-                        placeholder="Select Station"
-                        data={stations.filter(
-                            (elem) => !selectedStations.includes(elem.value)
-                        )}
-                        disabled={selectedStations.length <= 0}
-                        onChange={setCustomDestination}
+                    <MultiSelect
+                        placeholder="Select Stations"
+                        data={stations}
+                        onChange={setSelectedStations}
                         maxDropdownHeight={200}
                         searchable
-                        clearable
                         comboboxProps={{
                             transitionProps: {
                                 transition: "pop",
@@ -200,13 +157,80 @@ function App() {
                         mt={"xs"}
                     />
                 </Container>
-                {travelTimesCustom ? (
-                    <TravelTimesDisplay
-                        stationNames={selectedStationsNames}
-                        travelTimes={travelTimesCustom}
-                    />
-                ) : null}
-            </Paper>
+
+                <SimpleGrid
+                    cols={{ base: 1, xs: 2 }}
+                    mt={"40px"}
+                    spacing={"5%"}
+                    verticalSpacing={"lg"}
+                >
+                    <Paper shadow="xs" radius="md" withBorder p="lg">
+                        <Stack>
+                            <MidpointDisplay
+                                label={"Best Option"}
+                                tooltipDisplay={"Minimises total travel time."}
+                                stationName={midpointName}
+                                stationCode={midpointCode}
+                            />
+                            {selectedStations.length > 1 ? (
+                                <TravelTimesDisplay
+                                    stationNames={selectedStationsNames}
+                                    travelTimes={travelTimes}
+                                />
+                            ) : null}
+                        </Stack>
+                    </Paper>
+
+                    <Paper shadow="xs" radius="md" withBorder p="lg">
+                        <Stack>
+                            <MidpointDisplay
+                                label={"Fairer Option"}
+                                tooltipDisplay={"Penalises large variance in travel time."}
+                                stationName={midpointWithVarianceName}
+                                stationCode={midpointWithVarianceCode}
+                            />
+                            {selectedStations.length > 1 ? (
+                                <TravelTimesDisplay
+                                    stationNames={selectedStationsNames}
+                                    travelTimes={travelTimesWithVariance}
+                                />
+                            ) : null}
+                        </Stack>
+                    </Paper>
+                </SimpleGrid>
+
+                <Paper shadow="xs" radius="md" withBorder p="lg" mt={"lg"}>
+                    <Text size="md" fw={500}>
+                        {"Custom Destination"}
+                    </Text>
+                    <Container>
+                        <Select
+                            placeholder="Select Station"
+                            data={stations.filter(
+                                (elem) => !selectedStations.includes(elem.value)
+                            )}
+                            disabled={selectedStations.length <= 0}
+                            onChange={setCustomDestination}
+                            maxDropdownHeight={200}
+                            searchable
+                            clearable
+                            comboboxProps={{
+                                transitionProps: {
+                                    transition: "pop",
+                                    duration: 250,
+                                },
+                            }}
+                            mt={"xs"}
+                        />
+                    </Container>
+                    {travelTimesCustom ? (
+                        <TravelTimesDisplay
+                            stationNames={selectedStationsNames}
+                            travelTimes={travelTimesCustom}
+                        />
+                    ) : null}
+                </Paper>
+            </Container>
         </MantineProvider>
     );
 }
