@@ -6,7 +6,7 @@ Made with React.
 
 ## Description
 
-Given a list of MRT stations $ x_1, x_2, \dots, x_n $, the app tries to find  station $y$ that each minimises one of the following objective functions:
+Given a list of MRT stations $x_1, x_2, \dots, x_n$, the app tries to find  station $y$ that each minimises one of the following objective functions:
 1. $f(x) = \sum_{i=1}^{n} t(x_i, y) $,
 2. $f(x) = \sum_{i=1}^{n} t(x_i, y) + \lambda \sum_{i=1}^{n} (t(x_i, y) - \overline t)^2$
 
