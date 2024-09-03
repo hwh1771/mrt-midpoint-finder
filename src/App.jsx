@@ -7,16 +7,9 @@ import {
     MultiSelect,
     Text,
     Container,
-    Button,
-    Group,
-    Flex,
     Stack,
-    Center,
     Paper,
     SimpleGrid,
-    Dialog,
-    useMantineColorScheme,
-    useComputedColorScheme,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
 
@@ -29,7 +22,6 @@ import findTravelTimes from "./functions/findTravelTimes";
 
 import MidpointDisplay from "./components/MidpointDisplay/MidpointDisplay";
 import TravelTimesDisplay from "./components/TravelTimesDisplay";
-import { ColorSchemeToggle } from "./components/ColorSchemeToggle";
 import Header from "./components/Header/Header";
 
 function App() {
@@ -89,27 +81,21 @@ function App() {
     const midpointName = midpointStation
         ? midpointStation.label.replace(regex_thing, "")
         : null;
-    const travelTimes =
-        selectedStations.length >= 2
-            ? findTravelTimes(times, selectedStations, midpointCode)
-            : [];
+    const travelTimes =selectedStations.length >= 2
+        ? findTravelTimes(times, selectedStations, midpointCode)
+        : [];
 
     // Find Midpoint for objective function sum + variance.
-    const midpointWithVarianceCode = findMidpoint(
-        times,
-        selectedStations,
-        minimiseSumAndVariance
-    );
+    const midpointWithVarianceCode = findMidpoint(times,selectedStations,minimiseSumAndVariance);
     const midpointWithVarianceStation = stations.find(
         (elem) => elem.value === midpointWithVarianceCode
     );
     const midpointWithVarianceName = midpointWithVarianceStation
         ? midpointWithVarianceStation.label.replace(regex_thing, "")
         : null;
-    const travelTimesWithVariance =
-        selectedStations.length >= 2
-            ? findTravelTimes(times, selectedStations, midpointWithVarianceCode)
-            : [];
+    const travelTimesWithVariance = selectedStations.length >= 2
+        ? findTravelTimes(times, selectedStations, midpointWithVarianceCode)
+        : [];
 
     // Find Travel Times for custom midpoint.
     const travelTimesCustom = customDestination
@@ -127,12 +113,14 @@ function App() {
             withCssVariables
             withGlobalStyles
         >
-            <Header />
+            <Header/>
             <Container class="main-content">
                 <Container px={"xs"}>
                     <Container mt={"28px"} mb={"34px"}>
                         <Text size="26px" fw={700}>
-                            {"Find the best MRT station in the middle of everyone."}
+                            {
+                                "Find the middle MRT station from a list of stations."
+                            }
                         </Text>
                     </Container>
 
@@ -185,7 +173,9 @@ function App() {
                         <Stack>
                             <MidpointDisplay
                                 label={"Fairer Option"}
-                                tooltipDisplay={"Penalises large variance in travel time."}
+                                tooltipDisplay={
+                                    "Penalises large variance in travel time."
+                                }
                                 stationName={midpointWithVarianceName}
                                 stationCode={midpointWithVarianceCode}
                             />

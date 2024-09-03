@@ -38,11 +38,11 @@ npm run dev
 
 ## Roadmap
 
-[ ] Add a network map showing all starting points and the suggested midpoint.
+- [ ] Add a network map showing all starting points and the suggested midpoint.
 
-[ ] Add LRTs.
+- [ ] Add LRTs.
 
-[ ] Add slider to let user adjust tuning parameter $\lambda$ themselves.
+- [ ] Add slider to let user adjust tuning parameter $\lambda$ themselves.
 
 ## Acknowledgments
 

@@ -20,9 +20,8 @@ export default function MidpointDisplay({
         TE: '#965827'
     }
 
-    const color = lineCode in colorMapping ? colorMapping[lineCode] : 'black'
+    const color = lineCode in colorMapping ? colorMapping[lineCode] : ''
 
-    
     return (
         <Stack gap={0} mb={"lg"}>
             <Flex justify={"center"} align={"center"} gap={"4px"}>

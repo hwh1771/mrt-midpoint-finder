@@ -1,12 +1,12 @@
 .header{
     width: 100%;
-    padding: 0.8rem 2rem;
   background-color: var(--mantine-color-body);
   border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .header-inner{
     max-width: 1280px;
+    padding: 0.8rem 2rem ;
     margin: 0 auto;
   text-align: center;
 }
